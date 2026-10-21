@@ -1,6 +1,6 @@
 # Linux Guide
 
-An in-depth, self-contained HTML guide for complete beginners who want to become confident with Linux (Ubuntu/Debian first, with Fedora/RHEL notes).
+An in-depth, self-contained HTML guide — Beginner to Advance — for learning Linux (Ubuntu/Debian first, with Fedora/RHEL notes).
 
 **Live site (GitHub Pages):** https://krishant624.github.io/linux-guide/
 
