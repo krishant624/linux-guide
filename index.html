@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linux Guide — Beginner to Confident</title>
+<meta name="description" content="Self-contained Linux learner's guide: terminal, files, permissions, packages, networking, scripting, troubleshooting. Ubuntu-first with Fedora/RHEL notes.">
+<style>
+:root{
+  --bg:#f2f5f1;--bg2:#fff;--text:#14201a;--muted:#5a6b62;--border:#d3ddd6;
+  --accent:#0f766e;--accent2:#15803d;--accent-soft:#e7f5f1;
+  --side:#0a1612;--side-text:#e8f5ef;--side-muted:#91a89c;--side-active:#6ee7b7;
+  --term:#0b1220;--term-text:#d9f99d;--out-bg:#111827;--out-text:#cbd5e1;
+  --tip:#065f46;--tip-bg:#ecfdf5;--warn:#9a3412;--warn-bg:#fff7ed;--note:#1e40af;--note-bg:#eff6ff;
+  --good:#15803d;--bad:#b91c1c;--shadow:0 12px 32px rgba(15,23,42,.08);
+  --radius:14px;--max:820px;--side-w:300px;
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  --serif:Georgia,"Iowan Old Style",Palatino,serif;
+  --mono:ui-monospace,"Cascadia Code",SFMono-Regular,Menlo,Consolas,monospace;
+}
+[data-theme=dark]{
+  --bg:#07110e;--bg2:#0f1c18;--text:#e7f5ef;--muted:#9bb0a5;--border:#243832;
+  --accent:#2dd4bf;--accent2:#4ade80;--accent-soft:#123028;
+  --side:#050d0a;--side-text:#e7f5ef;--side-muted:#8aa396;--side-active:#6ee7b7;
+  --term:#050a12;--term-text:#bef264;--out-bg:#0b1220;--out-text:#94a3b8;
+  --tip:#6ee7b7;--tip-bg:#052e24;--warn:#fdba74;--warn-bg:#2a1608;--note:#93c5fd;--note-bg:#0b1a33;
+  --shadow:0 14px 36px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{margin:0;font-family:var(--serif);background:radial-gradient(900px 400px at 0% -10%,color-mix(in srgb,var(--accent) 16%,transparent),transparent),var(--bg);color:var(--text);line-height:1.72;font-size:18px}
+h1,h2,h3,h4,.brand,.eyebrow,.track-label,nav,.btn,.pill,.ex summary,.check h4,.example h4{font-family:var(--sans)}
+code,kbd,pre,.mono,.copy-btn,.search input,.toc a,th,td,.term,.out{font-family:var(--mono)}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.skip{position:absolute;left:-999px;top:0;background:var(--accent);color:#fff;padding:.5rem 1rem;z-index:100}
+.skip:focus{left:0}
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:.65rem;padding:.65rem .9rem;background:color-mix(in srgb,var(--bg2) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.brand{font-weight:750;text-decoration:none;color:var(--text);font-size:.92rem;white-space:nowrap}
+.burger{display:none;border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:10px;width:42px;height:42px;font-size:1.15rem;cursor:pointer}
+.search{position:relative;flex:1;max-width:380px;margin-left:auto}
+.search input{width:100%;padding:.62rem .8rem;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:.86rem}
+.search-results{display:none;position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;max-height:55vh;overflow:auto;box-shadow:var(--shadow);z-index:50}
+.search-results.show{display:block}
+.search-results a{display:block;padding:.65rem .85rem;text-decoration:none;color:var(--text);border-bottom:1px solid var(--border);font-size:.8rem}
+.search-results a:hover{background:var(--accent-soft)}
+.btn{border:1px solid var(--border);background:var(--bg2);color:var(--text);border-radius:10px;padding:.5rem .75rem;cursor:pointer;font-size:.8rem}
+.layout{display:grid;grid-template-columns:var(--side-w) 1fr;min-height:calc(100vh - 58px)}
+.sidebar{position:sticky;top:58px;height:calc(100vh - 58px);overflow:auto;background:var(--side);color:var(--side-text);padding:1rem .8rem 2rem;border-right:1px solid var(--border)}
+.sidebar h2{margin:.2rem 0 .45rem;font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;color:var(--side-muted)}
+.progress-box{margin:0 0 1rem;padding:.75rem;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:.78rem}
+.progress-box .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:.45rem}
+.progress-box .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .35s}
+.toc{list-style:none;margin:0;padding:0}
+.toc a{display:block;color:var(--side-muted);text-decoration:none;padding:.4rem .55rem;border-radius:8px;font-size:.76rem;line-height:1.35}
+.toc a:hover{color:var(--side-text);background:rgba(255,255,255,.05)}
+.toc a.active{color:#042f2e;background:var(--side-active);font-weight:700}
+.content-wrap{padding:1.4rem 1.15rem 4rem}
+main{max-width:var(--max);margin:0 auto;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:2rem 1.55rem 3rem;box-shadow:var(--shadow)}
+h1{font-size:clamp(1.85rem,3.2vw,2.45rem);margin:0 0 .55rem;letter-spacing:-.02em;line-height:1.15}
+h2{font-size:1.45rem;margin:2.25rem 0 .7rem;padding-top:.5rem;border-top:1px solid var(--border)}
+h2:first-of-type{border-top:0;margin-top:1.2rem}
+h3{font-size:1.1rem;margin:1.4rem 0 .4rem}
+p{margin:.7rem 0} ul,ol{padding-left:1.25rem} li{margin:.32rem 0}
+.lead{color:var(--muted);font-size:1.05rem}
+.hero{border-radius:18px;padding:1.45rem 1.25rem;margin-bottom:1.1rem;background:radial-gradient(700px 220px at 0% 0%,color-mix(in srgb,var(--accent) 22%,transparent),transparent),var(--accent-soft);border:1px solid var(--border)}
+.eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700;margin:0 0 .45rem}
+.meta{color:var(--muted);font-size:.9rem}
+.pillrow{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.9rem}
+.pill{font-size:.78rem;font-weight:650;padding:.28rem .65rem;border-radius:999px;border:1px solid var(--border);background:var(--bg2)}
+table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.86rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--border);padding:.5rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--accent-soft)}
+.termwrap,.outwrap{position:relative;margin:1rem 0}
+.term,.out{margin:0;padding:1rem 1rem 1rem 1rem;overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);font-size:.84rem;line-height:1.55;white-space:pre}
+.term{background:var(--term);color:var(--term-text)}
+.out{background:var(--out-bg);color:var(--out-text);border-style:dashed}
+.out::before{content:"output";display:inline-block;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.45rem}
+.copy-btn{position:absolute;top:.5rem;right:.5rem;background:#1f2937;color:#fff;border:1px solid #334155;border-radius:8px;padding:.22rem .5rem;font-size:.7rem;cursor:pointer;z-index:2}
+.callout{border-radius:12px;padding:.85rem 1rem;margin:1rem 0;border:1px solid var(--border)}
+.callout strong{margin-right:.3rem}
+.callout.tip{background:var(--tip-bg);color:var(--tip)}
+.callout.warn{background:var(--warn-bg);color:var(--warn)}
+.callout.note{background:var(--note-bg);color:var(--note)}
+.callout.mistake{background:color-mix(in srgb,var(--bad) 10%,var(--bg2));color:var(--bad);border-color:color-mix(in srgb,var(--bad) 35%,var(--border))}
+.callout p{margin:.3rem 0 0;color:var(--text)}
+.diagram{margin:1rem 0;padding:1rem;border-radius:14px;border:1px solid var(--border);background:linear-gradient(180deg,var(--accent-soft),var(--bg2))}
+.diagram svg{width:100%;height:auto;display:block;max-width:640px;margin:0 auto}
+.diagram figcaption{margin-top:.65rem;color:var(--muted);font-family:var(--sans);font-size:.86rem;text-align:center}
+.example{margin:1rem 0;padding:.9rem 1rem;border-radius:14px;border:1px solid var(--border);border-left:4px solid var(--accent2);background:color-mix(in srgb,var(--accent2) 8%,var(--bg2))}
+.example h4{margin:0 0 .4rem;font-size:.92rem;color:var(--accent2)}
+.ex{margin:1rem 0;border:1px solid var(--border);border-radius:14px;background:var(--bg);overflow:hidden}
+.ex summary{cursor:pointer;padding:.85rem 1rem;font-weight:650;list-style:none}
+.ex summary::-webkit-details-marker{display:none}
+.ex summary::before{content:"▸ ";color:var(--accent)}
+.ex[open] summary::before{content:"▾ "}
+.ex .body{padding:0 1rem 1rem}
+.check{margin:1rem 0;padding:.85rem 1rem;border:1px solid var(--border);border-radius:14px;background:var(--bg)}
+.check h4{margin:0 0 .45rem;font-size:.95rem}
+.check label{display:flex;gap:.55rem;align-items:flex-start;margin:.35rem 0;font-size:.86rem;cursor:pointer;font-family:var(--mono)}
+.distro{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin:1rem 0}
+.distro div{border:1px solid var(--border);border-radius:12px;padding:.75rem .85rem;background:var(--bg);font-size:.9rem}
+.distro strong{display:block;margin-bottom:.35rem;font-family:var(--sans)}
+@media(max-width:700px){.distro{grid-template-columns:1fr}}
+footer{margin-top:2.4rem;padding-top:1rem;border-top:1px solid var(--border);color:var(--muted);font-size:.9rem}
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:30}
+@media(max-width:920px){
+  .burger{display:inline-flex;align-items:center;justify-content:center}
+  .layout{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:58px;bottom:0;width:min(88vw,330px);transform:translateX(-105%);transition:transform .25s;z-index:35}
+  .sidebar.open{transform:translateX(0)}
+  .backdrop.show{display:block}
+  main{padding:1.3rem 1rem 2.4rem}
+}
+@media print{
+  .topbar,.sidebar,.backdrop,.copy-btn,.burger,.search,#themeToggle,.progress-box{display:none!important}
+  .layout{display:block} main{box-shadow:none;border:0;max-width:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="topbar">
+  <button class="burger" id="burger" aria-label="Open contents" aria-expanded="false" aria-controls="sidebar">☰</button>
+  <a class="brand" href="#top">Linux Guide</a>
+  <div class="search">
+    <label for="q" style="position:absolute;left:-9999px">Search</label>
+    <input id="q" type="search" placeholder="Search the guide…" autocomplete="off" aria-label="Search sections">
+    <div class="search-results" id="searchResults" role="listbox"></div>
+  </div>
+  <button class="btn" id="themeToggle" type="button" aria-label="Toggle theme">Theme</button>
+</header>
+<div class="backdrop" id="backdrop" hidden></div>
+<div class="layout">
+<nav class="sidebar" id="sidebar" aria-label="Table of contents">
+  <div class="progress-box">
+    <div>Sections done: <strong id="progText">0%</strong></div>
+    <div class="bar" aria-hidden="true"><i id="progBar"></i></div>
+    <div style="margin-top:.45rem;color:var(--side-muted)">Checkboxes save in this browser.</div>
+  </div>
+  <h2>Contents</h2>
+  <ol class="toc" id="toc"></ol>
+</nav>
+<div class="content-wrap">
+<main id="main">
+<div class="hero" id="top">
+  <p class="eyebrow">Self-contained · Offline · GitHub Pages</p>
+  <h1>Linux Guide: Beginner to Confident</h1>
+  <p class="lead">A friendly, practical path from “I’ve never used a terminal” to navigating files, permissions, packages, processes, networking, simple scripts, and real troubleshooting—mostly on Ubuntu/Debian, with Fedora/RHEL notes when commands differ.</p>
+  <p class="meta">Live: <a href="https://krishant624.github.io/linux-guide/">krishant624.github.io/linux-guide</a></p>
+  <div class="pillrow">
+    <span class="pill">Practice in a VM / WSL</span>
+    <span class="pill">Examples + common mistakes</span>
+    <span class="pill">Exercises with answers</span>
+  </div>
+</div>
+
+<div class="callout warn"><strong>Warning</strong><p>Practice in a <strong>virtual machine</strong>, <strong>WSL</strong>, live USB, or disposable cloud instance. Some commands can delete data or break a system. Never experiment with <code>rm -rf</code>, <code>dd</code>, or <code>mkfs</code> on a machine you care about.</p></div>
+
+<!-- 1 -->
+<section id="what-linux" data-keywords="kernel distribution ubuntu fedora debian open source windows macos">
+  <h2>1. What Linux is</h2>
+  <p><strong>Why it matters:</strong> “Linux” usually means the <em>kernel</em> plus a <em>distribution</em> (Ubuntu, Fedora, Debian…) that packages apps, an installer, and tools around it.</p>
+  <figure class="diagram" aria-label="Linux stack diagram">
+    <svg viewBox="0 0 640 210" role="img" aria-label="Apps on shell on packages on kernel on hardware">
+      <rect x="40" y="20" width="560" height="36" rx="8" fill="currentColor" opacity=".12"/><text x="60" y="44" fill="currentColor" font-size="14">Your apps (Firefox, Docker, code editors…)</text>
+      <rect x="40" y="66" width="560" height="36" rx="8" fill="currentColor" opacity=".16"/><text x="60" y="90" fill="currentColor" font-size="14">Shell + tools (bash, apt/dnf, systemd)</text>
+      <rect x="40" y="112" width="560" height="36" rx="8" fill="currentColor" opacity=".22"/><text x="60" y="136" fill="currentColor" font-size="14">Linux kernel (talks to CPU, disk, network)</text>
+      <rect x="40" y="158" width="560" height="36" rx="8" fill="currentColor" opacity=".28"/><text x="60" y="182" fill="currentColor" font-size="14">Hardware (laptop, VM, cloud server)</text>
+    </svg>
+    <figcaption>A distro stacks familiar apps and tools on top of the Linux kernel.</figcaption>
+  </figure>
+  <ul>
+    <li><strong>Open source:</strong> you can inspect and share most of the system software.</li>
+    <li><strong>vs Windows/macOS:</strong> stronger terminal culture, package managers instead of random installers, clearer separation of system vs user files.</li>
+    <li><strong>Common distros:</strong> Ubuntu/Debian (apt), Fedora/RHEL/Rocky (dnf), Arch (pacman).</li>
+  </ul>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Thinking “Linux” is one product. Always note <em>which distro and version</em> when following tutorials (e.g. Ubuntu 24.04).</p></div>
+  <div class="check" data-check="what-linux"><h4>Section progress</h4><label><input type="checkbox"> I can explain kernel vs distribution in one sentence</label></div>
+</section>
+
+<!-- 2 -->
+<section id="getting-started" data-keywords="vm wsl live usb cloud ssh first login">
+  <h2>2. Getting started</h2>
+  <p>Pick one playground:</p>
+  <ul>
+    <li><strong>WSL2 on Windows</strong> — easiest if you already use Windows: <code>wsl --install</code> then choose Ubuntu.</li>
+    <li><strong>VirtualBox / VMware / Hyper-V / UTM</strong> — full VM; safest for disk experiments.</li>
+    <li><strong>Live USB</strong> — try without installing.</li>
+    <li><strong>Cloud VM</strong> — DigitalOcean, AWS, Azure free tiers; login with SSH.</li>
+  </ul>
+  <div class="example">
+    <h4>How you’d use this</h4>
+    <p>On Windows: install WSL Ubuntu → open “Ubuntu” from the Start menu → you land in a bash prompt as your Linux user. On a cloud VM: create the instance, download the SSH key, then <code>ssh user@ip</code>.</p>
+  </div>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="whoami
+uname -a
+cat /etc/os-release">$ whoami
+$ uname -a
+$ cat /etc/os-release</pre></div>
+  <div class="outwrap"><pre class="out">krishant
+Linux hostname 6.8.0-… #… SMP … x86_64 GNU/Linux
+PRETTY_NAME="Ubuntu 24.04.1 LTS"
+…</pre></div>
+  <div class="callout tip"><strong>Tip</strong><p>Write down your username and whether you have <code>sudo</code>. You’ll need both constantly.</p></div>
+  <div class="check" data-check="getting-started"><h4>Section progress</h4><label><input type="checkbox"> I have a Linux environment and can open a terminal</label></div>
+</section>
+
+<!-- 3 -->
+<section id="terminal" data-keywords="bash shell prompt man help tab completion history command">
+  <h2>3. The terminal and shell</h2>
+  <p>The <strong>shell</strong> (usually <strong>bash</strong>) reads what you type. Structure: <code>command  options  arguments</code>.</p>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="ls -la /home
+man ls
+ls --help
+history | tail -n 5">$ ls -la /home
+$ man ls
+$ ls --help
+$ history | tail -n 5</pre></div>
+  <ul>
+    <li><strong>Tab</strong> — complete names; press twice to list matches.</li>
+    <li><strong>Up/Down</strong> — previous commands; <code>Ctrl+R</code> search history.</li>
+    <li><strong>Ctrl+C</strong> cancel; <strong>Ctrl+L</strong> or <code>clear</code> clear screen; <strong>Ctrl+D</strong> end input / exit.</li>
+  </ul>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Typing spaces in filenames without quotes. Prefer <code>mkdir "My Notes"</code> or avoid spaces: <code>my-notes</code>.</p></div>
+  <details class="ex"><summary>Try it yourself</summary><div class="body">
+    <p>Run <code>echo hello</code>, then <code>man echo</code> (quit with <code>q</code>). Use Tab to complete a long directory name under <code>/usr</code>.</p>
+    <details><summary>Show expected ideas</summary><p>You should see <code>hello</code>, a man page, and tab completing something like <code>/usr/share</code>.</p></details>
+  </div></details>
+  <div class="check" data-check="terminal"><h4>Section progress</h4><label><input type="checkbox"> I can read a prompt and use man/--help/tab/history</label></div>
+</section>
+
+<!-- 4 -->
+<section id="filesystem" data-keywords="filesystem home etc var usr tmp pwd cd ls path absolute relative">
+  <h2>4. Filesystem layout</h2>
+  <figure class="diagram">
+    <svg viewBox="0 0 640 220" role="img" aria-label="Tree of key Linux directories under root">
+      <text x="300" y="28" text-anchor="middle" fill="currentColor" font-size="16" font-weight="700">/ (root)</text>
+      <text x="70" y="70" fill="currentColor" font-size="13">/home — your files</text>
+      <text x="70" y="98" fill="currentColor" font-size="13">/etc — system config</text>
+      <text x="70" y="126" fill="currentColor" font-size="13">/var — logs, changing data</text>
+      <text x="70" y="154" fill="currentColor" font-size="13">/usr — installed programs</text>
+      <text x="340" y="70" fill="currentColor" font-size="13">/tmp — temporary</text>
+      <text x="340" y="98" fill="currentColor" font-size="13">/dev — devices</text>
+      <text x="340" y="126" fill="currentColor" font-size="13">/proc — kernel/process info</text>
+      <text x="340" y="154" fill="currentColor" font-size="13">/mnt or /media — mounts</text>
+      <text x="70" y="195" fill="currentColor" font-size="12" opacity=".8">Everything hangs under / — there are no drive letters like C:\</text>
+    </svg>
+    <figcaption>Unlike Windows drive letters, Linux has one tree starting at <code>/</code>.</figcaption>
+  </figure>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="pwd
+cd ~
+cd /
+ls -la
+cd /var/log
+cd -">$ pwd
+$ cd ~
+$ cd /
+$ ls -la
+$ cd /var/log
+$ cd -</pre></div>
+  <p><strong>Absolute</strong> paths start with <code>/</code>. <strong>Relative</strong> paths start from your current directory. <code>~</code> is your home; <code>..</code> is parent; <code>.</code> is current.</p>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Confusing <code>/home/you</code> with <code>/</code>. Deleting under <code>/</code> as root can destroy the OS. Stay in your home while learning.</p></div>
+  <div class="check" data-check="filesystem"><h4>Section progress</h4><label><input type="checkbox"> I can use pwd/cd/ls and name what /etc and /home are for</label></div>
+</section>
+
+<!-- 5 -->
+<section id="files" data-keywords="cp mv rm mkdir touch find ln symlink wildcard">
+  <h2>5. Working with files and directories</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="mkdir -p ~/learn/linux
+cd ~/learn/linux
+touch notes.txt
+cp notes.txt notes.bak
+mv notes.bak backup.txt
+ln -s notes.txt notes-link
+ls -l
+find ~ -name '*.txt' 2>/dev/null | head">$ mkdir -p ~/learn/linux
+$ cd ~/learn/linux
+$ touch notes.txt
+$ cp notes.txt notes.bak
+$ mv notes.bak backup.txt
+$ ln -s notes.txt notes-link
+$ ls -l
+$ find ~ -name '*.txt' 2>/dev/null | head</pre></div>
+  <ul>
+    <li><strong>Symbolic link</strong> (<code>ln -s</code>) — shortcut to another path.</li>
+    <li><strong>Hard link</strong> — another name for the same file data (same filesystem).</li>
+    <li>Wildcards: <code>*</code> any chars, <code>?</code> one char, <code>*.log</code> pattern.</li>
+  </ul>
+  <div class="callout warn"><strong>Warning</strong><p><code>rm -rf directory</code> deletes recursively with no trash. Prefer <code>rm file</code>, double-check paths, or move to a trash folder while learning. Never run <code>rm -rf /</code>.</p></div>
+  <div class="example"><h4>How you’d use this</h4><p>Organizing homework: <code>mkdir -p ~/school/math</code>, copy reports with <code>cp report.pdf ~/school/math/</code>, rename with <code>mv</code>, find lost files with <code>find ~ -iname '*budget*'</code>.</p></div>
+  <details class="ex"><summary>Try it yourself</summary><div class="body">
+    <p>Create <code>~/learn/demo</code>, three empty files, copy one, rename one, make a symlink, list with <code>ls -l</code>.</p>
+    <details><summary>Show a sample solution</summary>
+<div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="mkdir -p ~/learn/demo && cd ~/learn/demo
+touch a.txt b.txt c.txt
+cp a.txt a-copy.txt
+mv b.txt b-renamed.txt
+ln -s a.txt a-link
+ls -l">$ mkdir -p ~/learn/demo && cd ~/learn/demo
+$ touch a.txt b.txt c.txt
+$ cp a.txt a-copy.txt
+$ mv b.txt b-renamed.txt
+$ ln -s a.txt a-link
+$ ls -l</pre></div>
+    </details>
+  </div></details>
+  <div class="check" data-check="files"><h4>Section progress</h4><label><input type="checkbox"> I can create/copy/move/link files safely</label></div>
+</section>
+
+<!-- 6 -->
+<section id="text" data-keywords="cat less head tail nano vim edit">
+  <h2>6. Viewing and editing text</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="echo 'line one' > hello.txt
+echo 'line two' >> hello.txt
+cat hello.txt
+less /etc/hosts
+head -n 5 /etc/passwd
+tail -n 5 /etc/passwd
+nano hello.txt">$ echo 'line one' > hello.txt
+$ echo 'line two' >> hello.txt
+$ cat hello.txt
+$ less /etc/hosts
+$ head -n 5 /etc/passwd
+$ tail -n 5 /etc/passwd
+$ nano hello.txt</pre></div>
+  <p><strong>nano:</strong> easy—Ctrl+O save, Ctrl+X exit. <strong>vim survival:</strong> <code>i</code> insert, <code>Esc</code>, <code>:wq</code> save+quit, <code>:q!</code> quit without saving.</p>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Stuck in vim and panicking. Press <code>Esc</code>, type <code>:q!</code>, Enter. You’re out.</p></div>
+  <div class="check" data-check="text"><h4>Section progress</h4><label><input type="checkbox"> I can view files and edit with nano (and escape vim)</label></div>
+</section>
+
+<!-- 7 -->
+<section id="search-text" data-keywords="grep sed awk cut sort uniq wc pipe redirect tee">
+  <h2>7. Searching and processing text</h2>
+  <p>Pipes send one command’s output into the next. Redirection writes to files.</p>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="grep -n root /etc/passwd
+cut -d: -f1 /etc/passwd | sort | uniq | wc -l
+dmesg 2>/dev/null | tail -n 20 | tee ~/dmesg-tail.txt
+printf 'b\na\nc\na\n' | sort | uniq -c">$ grep -n root /etc/passwd
+$ cut -d: -f1 /etc/passwd | sort | uniq | wc -l
+$ dmesg 2>/dev/null | tail -n 20 | tee ~/dmesg-tail.txt
+$ printf 'b\na\nc\na\n' | sort | uniq -c</pre></div>
+  <ul>
+    <li><code>&gt;</code> overwrite file, <code>&gt;&gt;</code> append, <code>2&gt;</code> stderr, <code>|</code> pipe, <code>tee</code> view and save.</li>
+    <li><code>sed</code> stream edits; <code>awk</code> columns/patterns—learn gradually.</li>
+  </ul>
+  <div class="example"><h4>How you’d use this</h4><p>Find failed logins: <code>grep -i failed /var/log/auth.log</code> (Ubuntu) or <code>journalctl -u ssh -g failed</code>.</p></div>
+  <div class="callout tip"><strong>Tip</strong><p>Build pipelines one step at a time. Run the left half, then add the next <code>|</code>.</p></div>
+  <details class="ex"><summary>Try it yourself</summary><div class="body">
+    <p>List usernames from <code>/etc/passwd</code> (field 1), sort them, and count how many.</p>
+    <details><summary>Show answer</summary><div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="cut -d: -f1 /etc/passwd | sort | wc -l">$ cut -d: -f1 /etc/passwd | sort | wc -l</pre></div></details>
+  </div></details>
+  <div class="check" data-check="search-text"><h4>Section progress</h4><label><input type="checkbox"> I can use grep and a simple pipe with redirection</label></div>
+</section>
+
+<!-- 8 -->
+<section id="permissions" data-keywords="chmod chown sudo users groups umask passwd">
+  <h2>8. Users, groups, and permissions</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="whoami
+id
+ls -l hello.txt
+chmod u+x hello.txt
+chmod 644 hello.txt
+sudo -v">$ whoami
+$ id
+$ ls -l hello.txt
+$ chmod u+x hello.txt
+$ chmod 644 hello.txt
+$ sudo -v</pre></div>
+  <p>Permission triad: <strong>user / group / others</strong>, each rwx. Octal: 4=r, 2=w, 1=x → <code>755</code> or <code>644</code> common.</p>
+  <div class="outwrap"><pre class="out">-rw-r--r-- 1 you you 12 Mar 20 10:00 hello.txt
+# type  user  group  others
+# -     rw-   r--    r--</pre></div>
+  <div class="callout warn"><strong>Warning</strong><p>Avoid <code>chmod -R 777</code>. It makes files world-writable and is a security smell. Prefer the least permission that works.</p></div>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Using <code>sudo</code> for everything. Prefer your user; elevate only when editing system files or installing packages.</p></div>
+  <div class="example"><h4>How you’d use this</h4><p>Script won’t run? <code>chmod u+x script.sh</code> then <code>./script.sh</code>. Need to edit nginx config? <code>sudo nano /etc/nginx/nginx.conf</code>.</p></div>
+  <div class="check" data-check="permissions"><h4>Section progress</h4><label><input type="checkbox"> I understand ls -l permissions and can use chmod/sudo carefully</label></div>
+</section>
+
+<!-- 9 -->
+<section id="packages" data-keywords="apt dnf snap flatpak update install remove">
+  <h2>9. Package management</h2>
+  <div class="distro">
+    <div><strong>Ubuntu / Debian (apt)</strong>
+<pre class="term" style="border:0;padding:.4rem 0" data-copy="">sudo apt update
+sudo apt upgrade
+apt search htop
+sudo apt install htop
+sudo apt remove htop</pre>
+    </div>
+    <div><strong>Fedora / RHEL (dnf)</strong>
+<pre class="term" style="border:0;padding:.4rem 0">sudo dnf check-update
+sudo dnf upgrade
+dnf search htop
+sudo dnf install htop
+sudo dnf remove htop</pre>
+    </div>
+  </div>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="sudo apt update
+sudo apt install -y tree
+tree --version
+which tree">$ sudo apt update
+$ sudo apt install -y tree
+$ tree --version
+$ which tree</pre></div>
+  <p>Also: <strong>snap</strong>/<strong>flatpak</strong> for sandboxed desktop apps. Prefer distro packages for system tools.</p>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Installing random <code>.deb</code> files from the web without need. Prefer <code>apt</code>/<code>dnf</code> so updates stay consistent.</p></div>
+  <div class="check" data-check="packages"><h4>Section progress</h4><label><input type="checkbox"> I can update the system and install/remove a package</label></div>
+</section>
+
+<!-- 10 -->
+<section id="processes" data-keywords="ps top htop kill jobs systemd systemctl journalctl cron">
+  <h2>10. Processes and services</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="ps aux | head
+uptime
+systemctl status ssh || systemctl status sshd
+journalctl -u ssh -n 20 --no-pager
+sleep 300 &
+jobs
+kill %1">$ ps aux | head
+$ uptime
+$ systemctl status ssh || systemctl status sshd
+$ journalctl -u ssh -n 20 --no-pager
+$ sleep 300 &
+$ jobs
+$ kill %1</pre></div>
+  <ul>
+    <li><code>systemctl start|stop|restart|enable|disable SERVICE</code></li>
+    <li>Cron: <code>crontab -e</code> for user schedules; systemd timers are the modern alternative.</li>
+  </ul>
+  <div class="callout warn"><strong>Warning</strong><p><code>kill -9</code> is last resort. Try normal <code>kill PID</code> first so apps can exit cleanly.</p></div>
+  <div class="check" data-check="processes"><h4>Section progress</h4><label><input type="checkbox"> I can list processes and check a service with systemctl</label></div>
+</section>
+
+<!-- 11 -->
+<section id="disks" data-keywords="lsblk df du mount fstab lvm ext4 xfs mkfs">
+  <h2>11. Disks and storage</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="lsblk
+df -h
+du -sh ~/*
+mount | head">$ lsblk
+$ df -h
+$ du -sh ~/*
+$ mount | head</pre></div>
+  <p><code>/etc/fstab</code> mounts filesystems at boot. <strong>LVM</strong> adds flexible volumes on top of disks. Common FS: <strong>ext4</strong> (Ubuntu), <strong>XFS</strong> (many RHEL setups).</p>
+  <div class="callout warn"><strong>Warning</strong><p><code>mkfs</code>, <code>fdisk</code>, <code>parted</code>, and wrong <code>dd</code> targets can wipe disks. Practice only inside a throwaway VM with a second virtual disk.</p></div>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Reading <code>df</code> “100% full” on <code>/</code> and ignoring <code>du</code> to find the fat directory—often logs under <code>/var/log</code>.</p></div>
+  <div class="check" data-check="disks"><h4>Section progress</h4><label><input type="checkbox"> I can read lsblk/df/du and know mkfs is dangerous</label></div>
+</section>
+
+<!-- 12 -->
+<section id="networking" data-keywords="ip ping ss curl wget ssh scp rsync ufw firewalld dns">
+  <h2>12. Networking</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="ip a
+ping -c 3 1.1.1.1
+ss -tulpn | head
+curl -I https://example.com
+ssh-keygen -t ed25519 -C 'linux-guide'">$ ip a
+$ ping -c 3 1.1.1.1
+$ ss -tulpn | head
+$ curl -I https://example.com
+$ ssh-keygen -t ed25519 -C 'linux-guide'</pre></div>
+  <p>Copy a key to a server: <code>ssh-copy-id user@host</code>. Copy files: <code>scp file user@host:</code> or <code>rsync -avP dir/ user@host:dir/</code>.</p>
+  <div class="distro">
+    <div><strong>Ubuntu firewall</strong><pre class="term" style="border:0;padding:.4rem 0">sudo ufw allow OpenSSH
+sudo ufw enable
+sudo ufw status</pre></div>
+    <div><strong>Fedora firewall</strong><pre class="term" style="border:0;padding:.4rem 0">sudo firewall-cmd --permanent --add-service=ssh
+sudo firewall-cmd --reload
+firewall-cmd --list-all</pre></div>
+  </div>
+  <div class="callout mistake"><strong>Common mistake</strong><p>Enabling a firewall before allowing SSH on a remote VM—and locking yourself out. Always allow SSH first.</p></div>
+  <div class="check" data-check="networking"><h4>Section progress</h4><label><input type="checkbox"> I can ping, inspect ports with ss, and explain SSH keys</label></div>
+</section>
+
+<!-- 13 -->
+<section id="scripting" data-keywords="bash script shebang variables if for function arguments">
+  <h2>13. Shell scripting</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="cat > ~/learn/hello.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+name=${1:-friend}
+echo \"Hello, $name\"
+EOF
+chmod u+x ~/learn/hello.sh
+~/learn/hello.sh Linux">$ cat > ~/learn/hello.sh <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+name=${1:-friend}
+echo "Hello, $name"
+EOF
+$ chmod u+x ~/learn/hello.sh
+$ ~/learn/hello.sh Linux</pre></div>
+  <div class="outwrap"><pre class="out">Hello, Linux</pre></div>
+  <p>Useful: <code>if/then/fi</code>, <code>for f in *; do …; done</code>, functions, <code>$#</code> argc, <code>$?</code> exit code. <code>set -euo pipefail</code> makes scripts fail fast on errors.</p>
+  <div class="example"><h4>Practical mini-script idea</h4><p>Backup a folder: <code>tar -czf backup-$(date +%F).tar.gz ~/Documents</code> inside a script run by cron.</p></div>
+  <div class="callout tip"><strong>Tip</strong><p>Test scripts on junk data first. Quote variables: <code>"$file"</code>.</p></div>
+  <details class="ex"><summary>Try it yourself</summary><div class="body">
+    <p>Write a script that prints the current date and disk usage of your home (<code>du -sh ~</code>).</p>
+    <details><summary>Show a sample script</summary>
+<div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="#!/usr/bin/env bash
+set -euo pipefail
+echo \"Date: $(date)\"
+du -sh \"$HOME\"">#!/usr/bin/env bash
+set -euo pipefail
+echo "Date: $(date)"
+du -sh "$HOME"</pre></div>
+    </details>
+  </div></details>
+  <div class="check" data-check="scripting"><h4>Section progress</h4><label><input type="checkbox"> I can write and run a small bash script</label></div>
+</section>
+
+<!-- 14 -->
+<section id="environment" data-keywords="PATH bashrc profile alias environment variables">
+  <h2>14. Environment</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="echo $PATH
+echo $HOME
+export DEMO=1
+echo $DEMO
+alias ll='ls -alF'
+grep -n alias ~/.bashrc || true">$ echo $PATH
+$ echo $HOME
+$ export DEMO=1
+$ echo $DEMO
+$ alias ll='ls -alF'
+$ grep -n alias ~/.bashrc || true</pre></div>
+  <p>Put lasting aliases/exports in <code>~/.bashrc</code> (interactive bash) or <code>~/.profile</code>. Then <code>source ~/.bashrc</code>.</p>
+  <div class="callout mistake"><strong>Common mistake</strong><p>“Command not found” after installing something—often the shell session needs a restart, or the binary isn’t on <code>PATH</code> (<code>which tool</code>, <code>echo $PATH</code>).</p></div>
+  <div class="check" data-check="environment"><h4>Section progress</h4><label><input type="checkbox"> I know PATH, aliases, and where to put them</label></div>
+</section>
+
+<!-- 15 -->
+<section id="archives" data-keywords="tar gzip zip compress archive">
+  <h2>15. Archiving and compression</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="tar -czf learn-backup.tar.gz -C ~ learn
+tar -tzf learn-backup.tar.gz | head
+mkdir -p /tmp/restore && tar -xzf learn-backup.tar.gz -C /tmp/restore
+zip -r notes.zip ~/learn/linux
+unzip -l notes.zip | head">$ tar -czf learn-backup.tar.gz -C ~ learn
+$ tar -tzf learn-backup.tar.gz | head
+$ mkdir -p /tmp/restore && tar -xzf learn-backup.tar.gz -C /tmp/restore
+$ zip -r notes.zip ~/learn/linux
+$ unzip -l notes.zip | head</pre></div>
+  <p>Remember: <code>c</code> create, <code>x</code> extract, <code>t</code> list, <code>z</code> gzip, <code>f</code> file.</p>
+  <div class="check" data-check="archives"><h4>Section progress</h4><label><input type="checkbox"> I can create and extract a .tar.gz</label></div>
+</section>
+
+<!-- 16 -->
+<section id="logs" data-keywords="journalctl dmesg free vmstat iostat logs monitoring">
+  <h2>16. Logs and monitoring</h2>
+  <div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="journalctl -xe --no-pager | tail -n 30
+sudo dmesg | tail -n 20
+free -h
+uptime
+ls /var/log | head">$ journalctl -xe --no-pager | tail -n 30
+$ sudo dmesg | tail -n 20
+$ free -h
+$ uptime
+$ ls /var/log | head</pre></div>
+  <p>Triage order: what changed? disk full? OOM (memory)? service logs via <code>journalctl -u name</code>.</p>
+  <div class="example"><h4>How you’d use this</h4><p>Web server down → <code>systemctl status nginx</code> → <code>journalctl -u nginx -n 50</code> → <code>df -h</code> if it mentions no space.</p></div>
+  <div class="check" data-check="logs"><h4>Section progress</h4><label><input type="checkbox"> I can read journalctl and check free/uptime</label></div>
+</section>
+
+<!-- 17 -->
+<section id="security" data-keywords="security ssh hardening fail2ban updates least privilege">
+  <h2>17. Security basics</h2>
+  <ul>
+    <li>Least privilege: normal user daily; sudo only when needed.</li>
+    <li>Keep packages updated (<code>apt upgrade</code> / <code>dnf upgrade</code>).</li>
+    <li>SSH keys over passwords; disable password login only after keys work.</li>
+    <li><strong>fail2ban</strong> (optional): bans IPs after repeated SSH failures.</li>
+  </ul>
+  <div class="callout tip"><strong>Tip</strong><p>On cloud VMs, restrict SSH in the cloud firewall + ufw/firewalld. Don’t expose unnecessary ports.</p></div>
+  <div class="check" data-check="security"><h4>Section progress</h4><label><input type="checkbox"> I can list three security habits for a Linux box</label></div>
+</section>
+
+<!-- 18 -->
+<section id="troubleshooting" data-keywords="permission denied command not found disk full ssh sudo password">
+  <h2>18. Troubleshooting</h2>
+  <table>
+    <thead><tr><th>Symptom</th><th>Likely cause</th><th>What to try</th></tr></thead>
+    <tbody>
+      <tr><td>Permission denied</td><td>chmod/ownership/sudo</td><td><code>ls -l</code>, <code>chmod</code>, <code>sudo</code> if appropriate</td></tr>
+      <tr><td>command not found</td><td>not installed / PATH</td><td><code>which tool</code>, install package, check <code>$PATH</code></td></tr>
+      <tr><td>Disk full</td><td>/var/log growth</td><td><code>df -h</code>, <code>du -sh /*</code>, clean logs carefully</td></tr>
+      <tr><td>Service won’t start</td><td>config/deps</td><td><code>systemctl status</code>, <code>journalctl -u</code></td></tr>
+      <tr><td>SSH fails</td><td>firewall/key/sshd</td><td>console access, <code>ss -tulpn</code>, cloud security group</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note"><strong>Note</strong><p>Forgot Ubuntu password on a local VM: use recovery/GRUB single-user workflows for that distro—or reset the VM. Cloud images often have a reset option in the provider UI.</p></div>
+  <div class="check" data-check="troubleshooting"><h4>Section progress</h4><label><input type="checkbox"> I have a first-response checklist for common failures</label></div>
+</section>
+
+<!-- 19 -->
+<section id="practice" data-keywords="exercises practice capstone project">
+  <h2>19. Practice &amp; capstone</h2>
+  <h3>Warm-ups</h3>
+  <details class="ex"><summary>Exercise A — Home lab folder</summary><div class="body">
+    <p>Create <code>~/linux-lab/{inbox,outbox,scripts}</code>, a notes file, and a symlink from inbox to notes. List with <code>ls -lR</code>.</p>
+  </div></details>
+  <details class="ex"><summary>Exercise B — Log detective</summary><div class="body">
+    <p>Use <code>journalctl -n 100 --no-pager</code> and count how many lines contain <code>error</code> case-insensitive (<code>grep -ci error</code>).</p>
+  </div></details>
+  <details class="ex"><summary>Exercise C — Mini backup script</summary><div class="body">
+    <p>Script that tars <code>~/linux-lab</code> into <code>~/backups/lab-YYYY-MM-DD.tar.gz</code> and prints the file size.</p>
+    <details><summary>Sample solution</summary>
+<div class="termwrap"><button class="copy-btn" type="button">Copy</button><pre class="term" data-copy="#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p \"$HOME/backups\"
+stamp=$(date +%F)
+out=\"$HOME/backups/lab-$stamp.tar.gz\"
+tar -czf \"$out\" -C \"$HOME\" linux-lab
+du -h \"$out\"">#!/usr/bin/env bash
+set -euo pipefail
+mkdir -p "$HOME/backups"
+stamp=$(date +%F)
+out="$HOME/backups/lab-$stamp.tar.gz"
+tar -czf "$out" -C "$HOME" linux-lab
+du -h "$out"</pre></div>
+    </details>
+  </div></details>
+  <h3>Capstone project</h3>
+  <p>Build a personal “sysadmin starter kit” on your VM:</p>
+  <ol>
+    <li>Create a non-root workflow you understand (sudo when needed).</li>
+    <li>Install <code>htop</code>, <code>tree</code>, <code>curl</code>.</li>
+    <li>Write <code>~/bin/sysreport.sh</code> that prints: date, <code>uptime</code>, <code>df -h</code>, <code>free -h</code>, and last 10 journal lines; make it executable; add <code>~/bin</code> to <code>PATH</code> in <code>~/.bashrc</code>.</li>
+    <li>Create a weekly cron or document how you’d schedule it.</li>
+    <li>Optional: enable ufw/firewalld with SSH allowed.</li>
+  </ol>
+  <div class="check" data-check="practice"><h4>Section progress</h4><label><input type="checkbox"> I completed at least two exercises and sketched the capstone</label></div>
+</section>
+
+<!-- 20 -->
+<section id="cheatsheet" data-keywords="cheat sheet commands reference">
+  <h2>20. Cheat sheet</h2>
+  <table>
+    <thead><tr><th>Task</th><th>Commands</th></tr></thead>
+    <tbody>
+      <tr><td>Where am I / list</td><td><code>pwd</code> <code>ls -la</code> <code>cd</code></td></tr>
+      <tr><td>Files</td><td><code>cp</code> <code>mv</code> <code>rm</code> <code>mkdir -p</code> <code>find</code> <code>ln -s</code></td></tr>
+      <tr><td>Read/edit</td><td><code>cat</code> <code>less</code> <code>head</code> <code>tail</code> <code>nano</code></td></tr>
+      <tr><td>Search/pipe</td><td><code>grep</code> <code>|</code> <code>&gt;</code> <code>&gt;&gt;</code> <code>tee</code></td></tr>
+      <tr><td>Permissions</td><td><code>chmod</code> <code>chown</code> <code>sudo</code> <code>id</code></td></tr>
+      <tr><td>Packages</td><td><code>apt</code> / <code>dnf</code> update install remove</td></tr>
+      <tr><td>Processes</td><td><code>ps</code> <code>top</code> <code>systemctl</code> <code>journalctl</code></td></tr>
+      <tr><td>Disk</td><td><code>lsblk</code> <code>df -h</code> <code>du -sh</code></td></tr>
+      <tr><td>Network</td><td><code>ip a</code> <code>ping</code> <code>ss</code> <code>curl</code> <code>ssh</code></td></tr>
+      <tr><td>Archives</td><td><code>tar -czf</code> <code>tar -xzf</code></td></tr>
+    </tbody>
+  </table>
+  <div class="check" data-check="cheatsheet"><h4>Section progress</h4><label><input type="checkbox"> I’ll keep this cheat sheet handy while practicing</label></div>
+</section>
+
+<footer>
+  <p>Practice safely in a VM/WSL. Source: <a href="https://github.com/krishant624/linux-guide">krishant624/linux-guide</a> · Live: <a href="https://krishant624.github.io/linux-guide/">GitHub Pages</a>.</p>
+</footer>
+</main>
+</div>
+</div>
+<script>
+(function(){
+  const root=document.documentElement;
+  const toc=document.getElementById('toc');
+  const burger=document.getElementById('burger');
+  const sidebar=document.getElementById('sidebar');
+  const backdrop=document.getElementById('backdrop');
+  const themeToggle=document.getElementById('themeToggle');
+  const q=document.getElementById('q');
+  const results=document.getElementById('searchResults');
+  const progText=document.getElementById('progText');
+  const progBar=document.getElementById('progBar');
+  const sections=[...document.querySelectorAll('main section[id]')];
+
+  function systemTheme(){return matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}
+  function applyTheme(t){root.setAttribute('data-theme',t);themeToggle.textContent=t==='dark'?'Light':'Dark'}
+  try{applyTheme(localStorage.getItem('linux-guide-theme')||systemTheme())}catch(e){applyTheme(systemTheme())}
+  themeToggle.addEventListener('click',()=>{
+    const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+    try{localStorage.setItem('linux-guide-theme',next)}catch(e){}
+    applyTheme(next);
+  });
+
+  sections.forEach(sec=>{
+    const h=sec.querySelector('h2'); if(!h) return;
+    const li=document.createElement('li');
+    const a=document.createElement('a');
+    a.href='#'+sec.id; a.textContent=h.textContent; a.dataset.target=sec.id;
+    li.appendChild(a); toc.appendChild(li);
+  });
+  const tocLinks=[...toc.querySelectorAll('a')];
+  const spy=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      tocLinks.forEach(l=>l.classList.toggle('active',l.dataset.target===entry.target.id));
+    });
+  },{rootMargin:'-20% 0px -65% 0px',threshold:0.01});
+  sections.forEach(s=>spy.observe(s));
+
+  function setOpen(open){
+    sidebar.classList.toggle('open',open);
+    backdrop.classList.toggle('show',open);
+    backdrop.hidden=!open;
+    burger.setAttribute('aria-expanded',String(open));
+  }
+  burger.addEventListener('click',()=>setOpen(!sidebar.classList.contains('open')));
+  backdrop.addEventListener('click',()=>setOpen(false));
+  toc.addEventListener('click',e=>{if(e.target.closest('a')) setOpen(false)});
+
+  // Copy: use data-copy if present so "$ " prompts are not copied
+  document.querySelectorAll('.termwrap').forEach(wrap=>{
+    const btn=wrap.querySelector('.copy-btn');
+    const pre=wrap.querySelector('pre.term');
+    if(!btn||!pre) return;
+    btn.addEventListener('click',async()=>{
+      const text=pre.getAttribute('data-copy')||pre.textContent.replace(/^\$ /gm,'').replace(/\n\$ /g,'\n');
+      try{await navigator.clipboard.writeText(text);btn.textContent='Copied';setTimeout(()=>btn.textContent='Copy',1200)}
+      catch{btn.textContent='Failed';setTimeout(()=>btn.textContent='Copy',1200)}
+    });
+  });
+
+  // Progress checkboxes
+  function updateProgress(){
+    const boxes=[...document.querySelectorAll('.check input[type=checkbox]')];
+    if(!boxes.length){progText.textContent='0%';progBar.style.width='0%';return}
+    const done=boxes.filter(b=>b.checked).length;
+    const pct=Math.round(done/boxes.length*100);
+    progText.textContent=pct+'%'; progBar.style.width=pct+'%';
+  }
+  document.querySelectorAll('.check[data-check]').forEach(box=>{
+    const key='linux-guide-check-'+box.dataset.check;
+    let saved={};
+    try{saved=JSON.parse(localStorage.getItem(key)||'{}')}catch(e){saved={}}
+    box.querySelectorAll('input[type=checkbox]').forEach((input,i)=>{
+      input.checked=!!saved[i];
+      input.addEventListener('change',()=>{
+        const state={};
+        box.querySelectorAll('input[type=checkbox]').forEach((el,j)=>{state[j]=el.checked});
+        try{localStorage.setItem(key,JSON.stringify(state))}catch(e){}
+        updateProgress();
+      });
+    });
+  });
+  updateProgress();
+
+  function search(query){
+    const qq=query.trim().toLowerCase();
+    results.innerHTML='';
+    if(!qq){results.classList.remove('show');return}
+    const hits=[];
+    sections.forEach(sec=>{
+      const title=sec.querySelector('h2')?.textContent||sec.id;
+      const keywords=(sec.dataset.keywords||'')+' '+sec.textContent;
+      if(keywords.toLowerCase().includes(qq)) hits.push({id:sec.id,title});
+    });
+    if(!hits.length) results.innerHTML='<div style="padding:.85rem;color:var(--muted);font-size:.82rem">No matches</div>';
+    else hits.slice(0,12).forEach(h=>{
+      const a=document.createElement('a'); a.href='#'+h.id; a.textContent=h.title;
+      a.addEventListener('click',()=>{results.classList.remove('show');q.value='';setOpen(false)});
+      results.appendChild(a);
+    });
+    results.classList.add('show');
+  }
+  q.addEventListener('input',()=>search(q.value));
+  q.addEventListener('keydown',e=>{if(e.key==='Escape'){results.classList.remove('show');q.blur()}});
+  document.addEventListener('click',e=>{if(!e.target.closest('.search')) results.classList.remove('show')});
+})();
+</script>
+</body>
+</html>
